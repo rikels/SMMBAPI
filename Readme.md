@@ -41,7 +41,7 @@ Results
 │   ├── CreatorName (String)
 │
 │
-├── Records
+├── Records (Can also return empty, when none returned)
 │	│
 │	│
 │   ├── RecordMiiImage (String,url)

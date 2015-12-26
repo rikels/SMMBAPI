@@ -24,6 +24,8 @@ def smmbapi(ID):
 			return(".")
 		elif text == "slash":
 			return("/")
+		elif text == "hyphen":
+			return("-")
 		else:
 			return(text)
 
@@ -120,12 +122,22 @@ def smmbapi(ID):
 	Temp2 = Temp.find("div", {"class" : re.compile(".*fastest-user.*")})
 	if not Temp2.find("div", {"class" : "no-users-message"}):
 		Temp3 = Temp2.find("div", {"class" : "user-wrapper"})
-		RecordMiiImage = Temp3.find("div", {"class" : "mii-wrapper"}).find("a",{"id" : "mii"}).find("img")["src"]
+		#If there isn't a record, Nintendo doesn't return "no-users-message" like they do with first completed by
+		#but I left it in as an extra check, most of the time if there isn't a record the Mii icon will be "Dummy"
+		if not Temp3.find("a", {"class" : "icon-dummy-mii"}):
+			RecordMiiImage = Temp3.find("div", {"class" : "mii-wrapper"}).find("a",{"id" : "mii"}).find("img")["src"]
+		else:
+			RecordMiiImage = ""
 		for child in Temp3.findChildren("div"):
-			if re.match(".*flag.*",str(child.get("class"))):
+			#If there isn't a record, the flag will remain empty, so we check with .+ (as this isn't true when empty)
+			if re.match(".*flag .+",str(child.get("class"))):
 				RecordCountry = re.match(".*flag.*(\w{2}).*",str(child.get("class"))).group(1)
-			elif re.match(".*name.*",str(child.get("class"))):
+			else:
+				RecordCountry = ""
+			if re.match(".*name.*",str(child.get("class"))):
 				RecordName = child.text.strip()
+			else:
+				RecordName = ""
 		Temp3 = Temp2.find("div", {"class" : "clear-time"})
 		RecordTime = ""
 		for tag in Temp2.findAll("div",{"class" : re.compile("typography.*")}):
