@@ -4,7 +4,9 @@ This python script scrapes the info from courses via https://supermariomakerbook
 Open a terminal and go to the directory you placed the script in. Open up Python and import smmbapi.<br />
 In Python just run a command like this smmbapi.smmbapi(ID)<br />
 <b>Example:</b> smmbapi.smmbapi("A917-0000-00E3-0C15")<br />
-This will return a dictionary with all the information retrieved from the site. Here's a simple tree structure:<br />
+This will return a dictionary with all the information retrieved from the site. <br />
+If the given ID isn't correct, the script will only return 404 (Notf found).<br />
+Here's a simple tree structure:<br />
 ```
 Results
 ├── Header
