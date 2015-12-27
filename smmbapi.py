@@ -15,6 +15,12 @@ import re
 
 #Sometimes i had to do it the ugly way (mostly where you see .attrs and .get("class")), because the different versions of BeautifulSoup return different things
 def smmbapi(ID):
+	#This is the most versatile regex I was able to come up with, it will be able to change incorrect input to correct output (only bad formatted, it can't do wonders ;) )
+	InputValidation = re.match("([\d\w]{4})(?: ?[\-_ ]? ?)?([\d\w]{4})(?: ?[\-_ ]? ?)([\d\w]{4})(?: ?[\-_ ]? ?)([\d\w]{4})",ID)
+	if InputValidation:
+		ID = "{one}-{two}-{three}-{four}".format(one=InputValidation.group(1),two=InputValidation.group(2),three=InputValidation.group(3),four=InputValidation.group(4))
+	else:
+		return("Incorrect ID given, does not follow standards")
 	def convert_svg_typography_to_text(text):
 		if text == "percent":
 			return("%")
