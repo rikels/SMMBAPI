@@ -16,11 +16,11 @@ import re
 #Sometimes i had to do it the ugly way (mostly where you see .attrs and .get("class")), because the different versions of BeautifulSoup return different things
 def smmbapi(ID):
 	#This is the most versatile regex I was able to come up with, it will be able to change incorrect input to correct output (only bad formatted, it can't do wonders ;) )
-	InputValidation = re.match("([\d\w]{4})(?: ?[\-_ ]? ?)?([\d\w]{4})(?: ?[\-_ ]? ?)([\d\w]{4})(?: ?[\-_ ]? ?)([\d\w]{4})",ID)
+	InputValidation = re.match("([0-9a-fA-F]{4})(?: ?[\-_ ]? ?)?([0-9a-fA-F]{4})(?: ?[\-_ ]? ?)([0-9a-fA-F]{4})(?: ?[\-_ ]? ?)([0-9a-fA-F]{4})",ID)
 	if InputValidation:
-		ID = "{one}-{two}-{three}-{four}".format(one=InputValidation.group(1),two=InputValidation.group(2),three=InputValidation.group(3),four=InputValidation.group(4))
+		ID = "{one}-{two}-{three}-{four}".format(one=InputValidation.group(1),two=InputValidation.group(2),three=InputValidation.group(3),four=InputValidation.group(4)).upper()
 	else:
-		return("Incorrect ID given, does not follow standards")
+		return("{\"status\":{\"status_code\":\"400\",\"status_explanation\": \"the given ID wasn't correctly formatted\"}}")
 	def convert_svg_typography_to_text(text):
 		if text == "percent":
 			return("%")
@@ -46,13 +46,12 @@ def smmbapi(ID):
 			return("NSMBU")
 	page = requests.get("https://supermariomakerbookmark.nintendo.net/courses/{ID}".format(ID=ID))
 	if not page.status_code == 404:
-		bs = BeautifulSoup(page.content)
+		bs = BeautifulSoup(page.content, "html.parser")
 
 		#Extracting all the info of the header
 		#Creating a temporary variable and re-using it as it uses less memory (that's what I think, please prove me wrong when I am :) )
 		Temp = bs.find("div", {"class" : re.compile("course-header.*")})
 		HeaderColor = re.match(".*course-header.*bg-(\w+).*",str(Temp.attrs)).group(1)
-		RankNonprize = Temp.find("div", {"class" : "rank nonprize"})
 		#Removing the rank nonprize element, as it will put the value in front of the difficulty
 		[tag.extract() for tag in Temp.find("div",{"class":"rank nonprize"})]
 		Difficulty = Temp.getText().strip()
@@ -207,12 +206,13 @@ def smmbapi(ID):
 					UserName = child.text.strip()
 			LikedBy.append({"UserName":UserName,"UserCountry":UserCountry,"UserMii":UserMii})
 
-		return({"Header":{"HeaderColor":HeaderColor,"RankNonprize":RankNonprize,"Difficulty":Difficulty,"ClearRate":ClearRate},
-				"Body":{"CourseTitle":CourseTitle,"CourseImage":CourseImage,"CourseStyle":CourseStyle,"CreatedAt":CreatedAt,"CourseTag":CourseTag,"Likes":Likes,"Plays":Plays,"Shared":Shared,"Tries":Tries,"CourseFullImage":CourseFullImage,"CreatorMiiImage":CreatorMiiImage,"CreatorCountry":CreatorCountry,"CreatorMedals":CreatorMedals,"CreatorName":CreatorName},
-				"Records":{"RecordMiiImage":RecordMiiImage,"RecordCountry":RecordCountry,"RecordName":RecordName,"RecordTime":RecordTime,"FirstMiiImage":FirstMiiImage,"FirstCountry":FirstCountry,"FirstName":FirstName},
+		return({"Header": {"HeaderColor":HeaderColor,"Difficulty":Difficulty,"ClearRate":ClearRate},
+				"Body": {"CourseTitle":CourseTitle,"CourseImage":CourseImage,"CourseStyle":CourseStyle,"CreatedAt":CreatedAt,"CourseTag":CourseTag,"Likes":Likes,"Plays":Plays,"Shared":Shared,"Tries":Tries,"CourseFullImage":CourseFullImage,"CreatorMiiImage":CreatorMiiImage,"CreatorCountry":CreatorCountry,"CreatorMedals":CreatorMedals,"CreatorName":CreatorName},
+				"Records": {"RecordMiiImage":RecordMiiImage,"RecordCountry":RecordCountry,"RecordName":RecordName,"RecordTime":RecordTime,"FirstMiiImage":FirstMiiImage,"FirstCountry":FirstCountry,"FirstName":FirstName},
 				"RecentPlayers":RecentPlayers,
 				"ClearedBy":ClearedBy,
-				"LikedBy":LikedBy
+				"LikedBy":LikedBy,
+				"status":{"status_code":200,"status_explanation":"Everything went great!"}
 				})
 	else:
-		return(404)
+		return("{\"status\":{\"status_code\":404,\"status_explanation\":\"Incorrect ID given, Not Found\"}}")

@@ -1,11 +1,17 @@
 <H1>SMMBAPI</H1>
+<H2>Hosted API</H2>
+I use OpenShift (By RedHat) and Flask (Python library) to create a hosted version for you to use without Python.<br />
+use it like this: http://smmbapi-rikels.rhcloud.com/api/course/ID<br />
+Example: http://smmbapi-rikels.rhcloud.com/api/course/A917-0000-00E3-0C15<br />
+The result will be JSON. It's a good practice to always check the statuscode 200 is good, the rest is not ;)<br />
+<H2>Python API</H2>
 This python script scrapes the info from courses via https://supermariomakerbookmark.nintendo.net it looks them up by ID.
 <H2>How to use</H2>
 Open a terminal and go to the directory you placed the script in. Open up Python and import smmbapi.<br />
 In Python just run a command like this smmbapi.smmbapi(ID)<br />
 <b>Example:</b> smmbapi.smmbapi("A917-0000-00E3-0C15")<br />
 This will return a dictionary with all the information retrieved from the site. <br />
-If the given ID isn't correct, the script will only return 404 (Notf found).<br />
+If the given ID isn't correct, the script will only return 404 (Not found).<br />
 Here's a simple tree structure:<br />
 ```
 Results
