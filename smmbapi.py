@@ -96,7 +96,9 @@ def ExtractMakerInfo(bs):
 				MakerMedals += ConvertSVGtoText(re.match(".*typography.*typography-(\w+).*",str(tag.attrs)).group(1))
 		elif re.match(".*name.*",str(child.get("class"))):
 			MakerName = child.text.strip()
-	return({"MakerName":MakerName,"MakerCountry":MakerCountry,"MakerMedals":MakerMedals,"MakerMiiImage":MakerMiiImage})
+	if MakerMedals == "":
+		MakerMedals = 0
+	return({"MakerName":MakerName,"MakerCountry":MakerCountry,"MakerMedals":int(MakerMedals),"MakerMiiImage":MakerMiiImage})
 
 def ExtractCourseBodyInfo(bs):
 	#Extracting all the info from the "course-info"
@@ -281,7 +283,7 @@ def GetRecommendedCourses():
 									"Body":Body,
 									"ID":ID})
 		return({"Status":{"StatusCode":200,"StatusExplanation":"Everything went great!"},
-				"StrippedCourses":StrippedCourses})
+				"RecommendedCourses":StrippedCourses})
 	else:
 		return({"Status":{"StatusCode":404,"StatusExplanation":"Something went wrong while requesting the page?"}})
 
@@ -308,7 +310,7 @@ def GetRankedCourses(PageNum=1,Type="total_liked_count"):
 									"Body":Body,
 									"ID":ID})
 		return({"Status":{"StatusCode":200,"StatusExplanation":"Everything went great!"},
-				"StrippedCourses":StrippedCourses})
+				"RankedCourses":StrippedCourses})
 	else:
 		return({"Status":{"StatusCode":404,"StatusExplanation":"Something went wrong while requesting the page?"}})
 
@@ -339,7 +341,7 @@ def GetRankedMakers(PageNum=1,Type="total_liked_count"):
 			Likes = Maker.find("div",{"class" : "liked-count"})
 			for tag in Likes.findAll("div",{"class" : re.compile("typography.*")}):
 					MakerLikes += ConvertSVGtoText(re.match(".*typography.*typography-(\w+).*",str(tag.attrs)).group(1))
-			RankedMakers.append({"MakerName":MakerName,"MakerCountry":MakerCountry,"MakerMedals":MakerMedals,"MakerMiiImage":MakerMiiImage,"MakerLikes":MakerLikes,
+			RankedMakers.append({"MakerName":MakerName,"MakerCountry":MakerCountry,"MakerMedals":MakerMedals,"MakerMiiImage":MakerMiiImage,"MakerLikes":int(MakerLikes),
 								"Header":MakerHeaderInfo})
 		return({"Status":{"StatusCode":200,"StatusExplanation":"Everything went great!"},
 				"RankedMakers":RankedMakers})
